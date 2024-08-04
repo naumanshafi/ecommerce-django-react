@@ -1,20 +1,23 @@
-# pull official base image
+# Pull official base image
 FROM node:16-slim
 
-# set work directory
+# Set working directory
 WORKDIR /srv/app/frontend
 
-# add to $PATH
-ENV PATH /srv/app/node_modules/.bin:$PATH
+# Add to $PATH
+ENV PATH /srv/app/frontend/node_modules/.bin:$PATH
 
-# install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm install react-scripts@3.4.1 -g --silent
-RUN npm install
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package.json package-lock.json ./
 
-# add app
-COPY . ./
+# Install app dependencies and create necessary directories with permissions
+RUN npm install react-scripts@3.4.1 -g --silent && \
+    npm install && \
+    mkdir -p /srv/app/frontend/node_modules/.cache && \
+    chmod -R 777 /srv/app/frontend/node_modules/.cache
 
-# Start app
+# Copy the rest of the application code
+COPY . .
+
+# Start the app
 CMD ["npm", "start"]
