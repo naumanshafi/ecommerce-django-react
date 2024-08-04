@@ -12,12 +12,14 @@ COPY package.json package-lock.json ./
 
 # Install app dependencies and create necessary directories with permissions
 RUN npm install react-scripts@3.4.1 -g --silent && \
-    npm install && \
-    mkdir -p /srv/app/frontend/node_modules/.cache && \
-    chmod -R 777 /srv/app/frontend/node_modules/.cache
+    npm install
+    
+RUN mkdir -p /srv/app/frontend/node_modules/.cache
 
 # Copy the rest of the application code
 COPY . .
+
+RUN chmod -R 777 /srv/app/frontend/node_modules/.cache
 
 # Start the app
 CMD ["npm", "start"]
