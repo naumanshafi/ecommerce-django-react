@@ -1,0 +1,31 @@
+services:
+  django:
+    build:
+      context: .  # Assuming this is where your Django Dockerfile and source code reside
+      dockerfile: backend/Dockerfile
+    container_name: dev-django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/srv/app/backend  # Mount the backend directory
+      - ./base:/srv/app/base  # Mount the base directory
+      - ./media:/srv/app/media  # Mount the media directory
+    ports:
+      - "8000:8000"
+
+  react:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dev-react
+    command: npm start
+    volumes:
+      - ./frontend:/srv/app/frontend # Mount the whole React project directory
+      -  node_modules_volume:/srv/app/frontend/node_modules # Use named volume for node_modules to avoid overwriting with host's node_modules
+    ports:
+      - "3000:3000"
+    tty: true  # Ensures the container stays running
+    depends_on:
+      - django  # Ensures React starts only after Django is available
+
+volumes:
+  node_modules_volume:
