@@ -24,6 +24,8 @@ services:
     ports:
       - "3000:3000"
     tty: true  # Ensures the container stays running
+    environment:
+      - CHOKDIR_USERPOOLING=true
     depends_on:
       - django  # Ensures React starts only after Django is available
 
